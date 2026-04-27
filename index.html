@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porto — Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --cream: #f5f0e8;
+    --warm: #f0e6d0;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --rust: #b85c38;
+    --tile-blue: #2a5f7e;
+    --tile-blue-light: #d4e8f0;
+    --sage: #5c7a5c;
+    --sage-light: #d8e8d8;
+    --border: rgba(26,18,8,0.12);
+    --shadow: 0 2px 16px rgba(26,18,8,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 32px 24px 28px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 5vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  header .subtitle {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--gold-light);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 11px;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .filter-btn.active { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+
+  .divider { width: 1px; background: rgba(255,255,255,0.2); margin: 0 4px; }
+
+  /* RESULTS COUNT */
+  .results-bar {
+    padding: 14px 24px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(26,18,8,0.45);
+    border-bottom: 1px solid var(--border);
+    background: var(--warm);
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0;
+    padding: 0;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--cream);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: background 0.15s ease;
+    animation: fadeIn 0.3s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:hover { background: var(--warm); }
+
+  .card.hidden { display: none; }
+
+  /* IMAGE AREA */
+  .card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    background: var(--warm);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-img-placeholder {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    background: var(--warm);
+    position: relative;
+  }
+
+  /* PRIORITY BADGE */
+  .priority-dot {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+  .priority-dot.high { background: var(--rust); }
+  .priority-dot.medium { background: var(--gold); }
+  .priority-dot.low { background: #aaa; }
+
+  /* CARD BODY */
+  .card-body {
+    padding: 16px 18px 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+
+  .card-cat-badge {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Category colors */
+  .badge-coffee { background: #f5e6c8; color: #7a5200; }
+  .badge-pastry { background: #fde8d8; color: #8a3800; }
+  .badge-streetfood { background: #e8f5e8; color: #2a6a2a; }
+  .badge-restaurant { background: #f5e8f5; color: #6a2a6a; }
+  .badge-wine-bar { background: #ede8f5; color: #3a2a6a; }
+  .badge-bar { background: #e8eef5; color: #1a3a5a; }
+  .badge-church { background: #f5f0e0; color: #5a4a10; }
+  .badge-viewpoint { background: #e0f5e0; color: #1a5a1a; }
+  .badge-sight { background: #e8f0f8; color: #1a3a5a; }
+  .badge-museum { background: #f0e8e8; color: #5a1a1a; }
+  .badge-experience { background: #e0eef5; color: #1a4a5a; }
+  .badge-shopping { background: #f8f0e8; color: #5a3a10; }
+
+  .card-sub {
+    font-size: 11px;
+    color: rgba(26,18,8,0.45);
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+
+  .card-liner {
+    font-size: 13px;
+    color: rgba(26,18,8,0.75);
+    line-height: 1.5;
+    margin-top: 2px;
+    flex: 1;
+  }
+
+  /* META ROW */
+  .card-meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: rgba(26,18,8,0.5);
+  }
+
+  .meta-icon { font-size: 11px; }
+
+  .day-tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  .day-fri { background: #d4e8f0; color: var(--tile-blue); }
+  .day-sat { background: #d8e8d8; color: var(--sage); }
+  .day-flex { background: #f0e8d0; color: #7a5200; }
+  .day-fri-sat { background: #ede8f5; color: #5a2a7a; }
+
+  /* CARD FOOTER */
+  .card-footer {
+    padding: 10px 18px 14px;
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-map {
+    background: var(--ink);
+    color: var(--cream);
+    border: 1px solid var(--ink);
+  }
+  .btn-map:hover { background: var(--tile-blue); border-color: var(--tile-blue); }
+
+  .btn-ig {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  .btn-ig:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* HOURS */
+  .card-hours {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(26,18,8,0.4);
+    padding: 0 18px 10px;
+  }
+
+  /* STEP / TIME BADGE */
+  .step-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    background: var(--ink);
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  /* SECTION LABELS */
+  .section-label {
+    grid-column: 1 / -1;
+    background: var(--ink);
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-style: italic;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    text-transform: uppercase;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 60px 24px;
+    text-align: center;
+    color: rgba(26,18,8,0.35);
+    font-size: 14px;
+  }
+
+  /* SUNSET SPECIAL */
+  .card.sunset-card .card-img-placeholder {
+    background: linear-gradient(160deg, #f5a623 0%, #e8607a 50%, #2a3a7e 100%);
+  }
+
+  /* SCROLL TO TOP */
+  .scroll-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--ink);
+    color: var(--gold);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    z-index: 200;
+  }
+
+  .scroll-top.visible { display: flex; }
+
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    header { padding: 20px 16px 16px; }
+    .header-meta { display: none; }
+    .card-name { font-size: 14px; }
+    .card-img-placeholder { height: 120px; font-size: 32px; }
+    .card-body { padding: 12px 14px 10px; }
+    .card-footer { padding: 8px 14px 12px; }
+    .link-btn { font-size: 10px; padding: 5px 8px; }
+  }
+
+  @media (max-width: 380px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>Porto</h1>
+    <span class="subtitle">Field Guide · Apr 30 – May 3</span>
+  </div>
+  <div class="header-meta">
+    <span>🏨 Rebello Hotel, Gaia</span>
+    <span>🌅 Sunset May 1 · 20:31</span>
+    <span>🍽️ Elemento · Sat 20:00</span>
+  </div>
+  <div class="filters">
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="day-fri">Friday</button>
+      <button class="filter-btn" data-filter="day-sat">Saturday</button>
+    </div>
+    <div class="divider"></div>
+    <div class="filter-group">
+      <button class="filter-btn" data-filter="cat-coffee">☕ Coffee</button>
+      <button class="filter-btn" data-filter="cat-food">🍽️ Food</button>
+      <button class="filter-btn" data-filter="cat-wine">🍷 Wine</button>
+      <button class="filter-btn" data-filter="cat-bar">🍸 Bars</button>
+      <button class="filter-btn" data-filter="cat-sight">👁️ Sights</button>
+      <button class="filter-btn" data-filter="cat-shop">🛍️ Shop</button>
+    </div>
+    <div class="divider"></div>
+    <div class="filter-group">
+      <button class="filter-btn" data-filter="priority-high">⭐ Must-do</button>
+      <button class="filter-btn" data-filter="near-hotel">🏨 Near Hotel</button>
+    </div>
+  </div>
+</header>
+
+<div class="results-bar" id="resultsBar">50 places</div>
+
+<div class="grid" id="grid"></div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const places = [
+  {name:"Soma",cat:"Coffee",sub:"Specialty coffee",priority:"High",when:"Morning",day:"Fri",liner:"Top specialty coffee — fast, quality, sets the tone",hours:"Mon–Sat 8:00–18:00",maps:"https://www.google.com/maps/search/?api=1&query=Soma+Porto",ig:"https://www.instagram.com/soma.porto/",emoji:"☕"},
+  {name:"Combi Coffee Roasters",cat:"Coffee",sub:"Specialty coffee",priority:"High",when:"Morning",day:"Flex",liner:"Roasts in-house, relaxed local vibe",hours:"Daily 8:00–18:00",maps:"https://www.google.com/maps/search/?api=1&query=Combi+Coffee+Roasters+Porto",ig:"https://www.instagram.com/combi_coffee/",emoji:"☕"},
+  {name:"Hakko",cat:"Coffee",sub:"Cafe / bakery",priority:"High",when:"Morning",day:"Flex",liner:"Small seasonal bakery-cafe, cool + local",hours:"Wed–Sun 9:00–17:00",maps:"https://www.google.com/maps/search/?api=1&query=Hakko+Porto",ig:"https://www.instagram.com/hakko_house_/",emoji:"☕"},
+  {name:"7g Roaster",cat:"Coffee",sub:"Specialty coffee",priority:"Medium",when:"Morning",day:"Flex",liner:"Strong roaster in Gaia — worth it if crossing the bridge",hours:"Daily 9:00–18:00",maps:"https://www.google.com/maps/search/?api=1&query=7g+Roaster+Gaia+Porto",ig:"https://www.instagram.com/7g.roaster/",emoji:"☕"},
+  {name:"Época",cat:"Coffee",sub:"Brunch",priority:"High",when:"Morning",day:"Sat",liner:"Best brunch vibe in Porto right now — the Saturday start",hours:"Daily 9:00–17:00",maps:"https://www.google.com/maps/search/?api=1&query=Época+Porto",ig:"https://www.instagram.com/epocaporto/",emoji:"🥐"},
+  {name:"Manteigaria",cat:"Pastry",sub:"Pastel de nata",priority:"High",when:"Morning",day:"Fri",liner:"Best pastel de nata in Porto — eat standing, non-negotiable",hours:"Daily 8:00–22:00",maps:"https://www.google.com/maps/search/?api=1&query=Manteigaria+Porto",ig:"https://www.instagram.com/manteigaria.oficial/",emoji:"🥮"},
+  {name:"Conga",cat:"Streetfood",sub:"Bifanas",priority:"High",when:"Lunch",day:"Fri",liner:"Iconic bifana — spicy garlic pork, eat standing, don't skip",hours:"Mon–Sat 9:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Conga+Porto",ig:"",emoji:"🥪"},
+  {name:"Gazela",cat:"Streetfood",sub:"Cachorrinho",priority:"High",when:"Lunch",day:"Fri",liner:"Famous crispy hot dog sandwich — addictive, very Porto",hours:"Mon–Sat 9:00–22:00",maps:"https://www.google.com/maps/search/?api=1&query=Gazela+Porto",ig:"",emoji:"🌭"},
+  {name:"Oficina dos Rissóis",cat:"Streetfood",sub:"Fried snacks",priority:"Medium",when:"Lunch",day:"Flex",liner:"Shrimp + meat rissoles — perfect mid-afternoon snack",hours:"Mon–Sat 10:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Oficina+dos+Rissóis+Porto",ig:"https://www.instagram.com/oficina.dos.rissois/",emoji:"🍤"},
+  {name:"Elemento",cat:"Restaurant",sub:"Modern",priority:"High",when:"Dinner",day:"Sat",liner:"Fixed Saturday dinner — 20:00 reservation. The anchor.",hours:"Tue–Sun 19:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Elemento+Porto",ig:"https://www.instagram.com/elemento.porto/",emoji:"🍽️"},
+  {name:"Bicho",cat:"Restaurant",sub:"Modern Portuguese",priority:"High",when:"Dinner",day:"Sat",liner:"Top casual dining — foodie but relaxed",hours:"Tue–Sun 12:30–15:00, 19:30–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Bicho+Porto",ig:"https://www.instagram.com/bicho.porto/",emoji:"🍽️"},
+  {name:"Babel",cat:"Restaurant",sub:"Sharing plates",priority:"High",when:"Dinner",day:"Fri",liner:"Sharing plates + wine — intimate, perfect Friday dinner",hours:"Tue–Sun 19:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Babel+Porto",ig:"https://www.instagram.com/babelporto/",emoji:"🍽️"},
+  {name:"Genuíno",cat:"Restaurant",sub:"Portuguese",priority:"High",when:"Lunch",day:"Sat",liner:"Balanced modern + local — solid Cedofeita lunch",hours:"Tue–Sat 12:00–15:00, 19:00–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Genuíno+Porto",ig:"",emoji:"🍽️"},
+  {name:"Provável",cat:"Restaurant",sub:"Modern casual",priority:"Medium",when:"Dinner",day:"Flex",liner:"Solid modern casual — slightly under the radar",hours:"Tue–Sun 12:30–15:00, 19:30–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Provável+Porto",ig:"",emoji:"🍽️"},
+  {name:"Cais me Bem",cat:"Restaurant",sub:"Seafood",priority:"Medium",when:"Dinner",day:"Fri",liner:"Simple seafood by the river — convenience + view",hours:"Daily 12:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Cais+me+Bem+Porto",ig:"",emoji:"🦞"},
+  {name:"Casa Tão Longe",cat:"Restaurant",sub:"Local",priority:"Medium",when:"Dinner",day:"Flex",liner:"Cozy spot near Rebello — arrival night or lazy evening",hours:"Tue–Sun 19:00–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Casa+Tão+Longe+Tão+Perto+Gaia",ig:"",emoji:"🍽️"},
+  {name:"Prova",cat:"Wine Bar",sub:"Portuguese wine",priority:"High",when:"Afternoon",day:"Fri",liner:"Most refined wine bar — perfect pre-sunset glass",hours:"Mon–Sat 14:00–24:00",maps:"https://www.google.com/maps/search/?api=1&query=Prova+Porto",ig:"",emoji:"🍷"},
+  {name:"Nát'Cool Wines",cat:"Wine Bar",sub:"Natural wine",priority:"High",when:"Afternoon",day:"Flex",liner:"Relaxed natural wine — less polished, more spontaneous",hours:"Tue–Sun 15:00–24:00",maps:"https://www.google.com/maps/search/?api=1&query=Nat+Cool+Wines+Porto",ig:"",emoji:"🍷"},
+  {name:"Fiasco",cat:"Wine Bar",sub:"Natural wine",priority:"High",when:"Evening",day:"Fri/Sat",liner:"Lively, social — best wine bar energy",hours:"Mon–Sat 17:00–02:00",maps:"https://www.google.com/maps/search/?api=1&query=Fiasco+Porto",ig:"",emoji:"🍷"},
+  {name:"Capela Incomum",cat:"Wine Bar",sub:"Chapel bar",priority:"High",when:"Evening",day:"Sat",liner:"Wine bar in a former chapel — the most atmospheric stop",hours:"Tue–Sun 17:00–24:00",maps:"https://www.google.com/maps/search/?api=1&query=Capela+Incomum+Porto",ig:"",emoji:"⛪"},
+  {name:"Aduela",cat:"Wine Bar",sub:"Casual wine",priority:"Medium",when:"Afternoon",day:"Flex",liner:"Outdoor seating, street vibe — spontaneous wine stop",hours:"Mon–Sat 16:00–24:00",maps:"https://www.google.com/maps/search/?api=1&query=Aduela+Porto",ig:"",emoji:"🍷"},
+  {name:"Torto",cat:"Bar",sub:"Cocktails",priority:"High",when:"Night",day:"Fri/Sat",liner:"Best cocktails in Porto — creative, slightly chaotic, unforgettable",hours:"Mon–Sat 19:00–02:00",maps:"https://www.google.com/maps/search/?api=1&query=Torto+Porto",ig:"https://www.instagram.com/bar_torto_porto/",emoji:"🍸"},
+  {name:"Guindalense FC",cat:"Bar",sub:"Local bar",priority:"High",when:"Evening",day:"Fri",liner:"Local football club bar — cheap beer, best bridge view, the secret sauce",hours:"Daily 12:00–24:00",maps:"https://www.google.com/maps/search/?api=1&query=Guindalense+Football+Club+Porto",ig:"",emoji:"🍺"},
+  {name:"Catraio",cat:"Bar",sub:"Craft beer",priority:"Medium",when:"Evening",day:"Flex",liner:"Best craft beer bar — different energy from wine spots",hours:"Mon–Sat 17:00–24:00",maps:"https://www.google.com/maps/search/?api=1&query=Catraio+Porto",ig:"",emoji:"🍺"},
+  {name:"Base Porto",cat:"Bar",sub:"Garden bar",priority:"Medium",when:"Afternoon",day:"Flex",liner:"Outdoor garden bar — locals, relaxed, good daytime energy",hours:"Daily 14:00–24:00",maps:"https://www.google.com/maps/search/?api=1&query=Base+Porto",ig:"",emoji:"🌿"},
+  {name:"Igreja de Santa Clara",cat:"Church",sub:"Baroque interior",priority:"High",when:"Morning",day:"Fri",liner:"The wow moment — insane baroque interior, small exterior",hours:"Tue–Sat 10:00–12:00, 14:00–17:30",maps:"https://www.google.com/maps/search/?api=1&query=Igreja+de+Santa+Clara+Porto",ig:"",emoji:"⛪"},
+  {name:"Igreja de Santo Ildefonso",cat:"Church",sub:"Tile facade",priority:"High",when:"Morning",day:"Fri",liner:"Iconic azulejo facade — stand across the street, 5–10 min",hours:"Daily 9:00–12:30, 15:00–18:30",maps:"https://www.google.com/maps/search/?api=1&query=Igreja+de+Santo+Ildefonso+Porto",ig:"",emoji:"🔵"},
+  {name:"São Bento Station",cat:"Church",sub:"Tile interior",priority:"High",when:"Morning",day:"Fri",liner:"Best tile interior in Portugal — 20 min, worth every second",hours:"Daily 6:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=São+Bento+Station+Porto",ig:"",emoji:"🚂"},
+  {name:"Capela das Almas",cat:"Church",sub:"Tile facade",priority:"High",when:"Morning",day:"Fri",liner:"Striking blue azulejo exterior — on the route, walk-by",hours:"Daily 8:00–13:00, 15:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Capela+das+Almas+Porto",ig:"",emoji:"🔵"},
+  {name:"Igreja do Carmo",cat:"Church",sub:"Tile facade",priority:"Medium",when:"Morning",day:"Fri",liner:"Iconic tiled side wall — quick photo stop on the route",hours:"Daily 9:00–17:30",maps:"https://www.google.com/maps/search/?api=1&query=Igreja+do+Carmo+Porto",ig:"",emoji:"🔵"},
+  {name:"Sé do Porto",cat:"Church",sub:"Cathedral + views",priority:"Medium",when:"Late Morning",day:"Fri",liner:"Great views over the old town from the terrace",hours:"Daily 9:00–18:30",maps:"https://www.google.com/maps/search/?api=1&query=Sé+do+Porto",ig:"",emoji:"⛪"},
+  {name:"Jardim do Morro",cat:"Viewpoint",sub:"Sunset spot",priority:"High",when:"Sunset · 20:31",day:"Fri",liner:"The sunset moment — arrive early, stay as long as you want",hours:"Always open",maps:"https://www.google.com/maps/search/?api=1&query=Jardim+do+Morro+Vila+Nova+de+Gaia",ig:"",emoji:"🌅"},
+  {name:"Serra do Pilar",cat:"Viewpoint",sub:"Panoramic",priority:"High",when:"Sunset",day:"Fri",liner:"Best panoramic view of Porto — 5 min walk from Morro",hours:"Always open",maps:"https://www.google.com/maps/search/?api=1&query=Miradouro+da+Serra+do+Pilar+Gaia",ig:"",emoji:"🏔️"},
+  {name:"Miradouro Macieirinha",cat:"Viewpoint",sub:"Hidden viewpoint",priority:"High",when:"Day",day:"Sat",liner:"Hidden terraced viewpoint near Cristal — quiet, local, beautiful",hours:"Always open",maps:"https://www.google.com/maps/search/?api=1&query=Miradouro+da+Quinta+da+Macieirinha+Porto",ig:"",emoji:"🌄"},
+  {name:"Ribeira Square",cat:"Sight",sub:"Neighborhood",priority:"High",when:"Afternoon",day:"Fri",liner:"Peak Porto atmosphere — take your time here",hours:"Always open",maps:"https://www.google.com/maps/search/?api=1&query=Ribeira+Porto",ig:"",emoji:"🌊"},
+  {name:"Dom Luís I Bridge",cat:"Sight",sub:"Bridge",priority:"High",when:"Afternoon",day:"Fri",liner:"Walk the upper level — views both ways, transition to Gaia",hours:"Always open",maps:"https://www.google.com/maps/search/?api=1&query=Ponte+Dom+Luís+I+Porto",ig:"",emoji:"🌉"},
+  {name:"Largo da Pena Ventosa",cat:"Sight",sub:"Hidden square",priority:"Medium",when:"Morning",day:"Fri",liner:"Hidden local square near Sé — walk through, adds texture",hours:"Always open",maps:"https://www.google.com/maps/search/?api=1&query=Largo+da+Pena+Ventosa+Porto",ig:"",emoji:"🏘️"},
+  {name:"Jardins Palácio de Cristal",cat:"Sight",sub:"Park + views",priority:"High",when:"Morning",day:"Sat",liner:"Beautiful park + Douro views — the calm moment of Saturday",hours:"Daily 8:00–20:00",maps:"https://www.google.com/maps/search/?api=1&query=Jardins+do+Palácio+de+Cristal+Porto",ig:"",emoji:"🌳"},
+  {name:"Serralves",cat:"Museum",sub:"Art + park",priority:"High",when:"Day",day:"Sat",liner:"Contemporary art + huge park — calm contrast to the city",hours:"Tue–Sun 10:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Fundação+de+Serralves+Porto",ig:"",emoji:"🎨"},
+  {name:"Piscina das Marés",cat:"Experience",sub:"Ocean pool",priority:"High",when:"Day",day:"Sat",liner:"Álvaro Siza masterpiece + raw Atlantic — completely different vibe",hours:"Seasonal, check ahead",maps:"https://www.google.com/maps/search/?api=1&query=Piscina+das+Marés+Leça+da+Palmeira",ig:"",emoji:"🌊"},
+  {name:"Earlymade",cat:"Shopping",sub:"Lifestyle / design",priority:"High",when:"Day",day:"Sat",liner:"Core stop — one of the best curated lifestyle stores in Porto",hours:"Mon–Sat 11:00–19:30",maps:"https://www.google.com/maps/search/?api=1&query=Earlymade+Porto+Cedofeita",ig:"https://www.instagram.com/earlymade/",emoji:"🛍️"},
+  {name:"Matéria Prima",cat:"Shopping",sub:"Design objects",priority:"High",when:"Day",day:"Sat",liner:"Top design store — ceramics, objects, strong curation",hours:"Mon–Sat 10:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Matéria+Prima+Porto",ig:"https://www.instagram.com/materia_prima_porto/",emoji:"🏺"},
+  {name:"Patch Porto",cat:"Shopping",sub:"Concept store",priority:"High",when:"Day",day:"Sat",liner:"Fashion + design objects — one of the best shops",hours:"Mon–Sat 11:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Patch+Porto",ig:"https://www.instagram.com/patch_porto/",emoji:"👕"},
+  {name:"Portuguese Flannel",cat:"Shopping",sub:"Clothing",priority:"High",when:"Day",day:"Sat",liner:"Quality Portuguese clothing — timeless, not touristy",hours:"Mon–Sat 10:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Portuguese+Flannel+Porto",ig:"",emoji:"👔"},
+  {name:"Loja da Burel",cat:"Shopping",sub:"Wool / design",priority:"High",when:"Day",day:"Sat",liner:"Wool products + blankets — very Portugal, well designed",hours:"Mon–Sat 10:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Loja+da+Burel+Porto",ig:"",emoji:"🧶"},
+  {name:"The Feeting Room",cat:"Shopping",sub:"Multi-brand",priority:"High",when:"Day",day:"Sat",liner:"Best overall shop — clothes, sneakers, lifestyle in one place",hours:"Mon–Sat 10:00–20:00",maps:"https://www.google.com/maps/search/?api=1&query=The+Feeting+Room+Porto",ig:"",emoji:"👟"},
+  {name:"Zum Zum Concept Shop",cat:"Shopping",sub:"Concept store",priority:"High",when:"Day",day:"Sat",liner:"Clean, curated lifestyle objects — pairs well with Patch + Matéria",hours:"Mon–Sat 11:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Zum+Zum+Porto",ig:"https://www.instagram.com/zumzum_conceptshop/",emoji:"🛍️"},
+  {name:"Escovaria de Belomonte",cat:"Shopping",sub:"Specialty",priority:"High",when:"Day",day:"Fri",liner:"Old-school brush shop — quirky, tactile, 5 min max",hours:"Mon–Fri 9:00–13:00, 14:00–18:00",maps:"https://www.google.com/maps/search/?api=1&query=Escovaria+de+Belomonte+Porto",ig:"",emoji:"🪣"},
+  {name:"A Pérola do Bolhão",cat:"Shopping",sub:"Old grocery",priority:"High",when:"Day",day:"Flex",liner:"Beautiful old grocery interior — visual + snack stop",hours:"Mon–Sat 9:00–19:30",maps:"https://www.google.com/maps/search/?api=1&query=A+Pérola+do+Bolhão+Porto",ig:"",emoji:"🫙"},
+  {name:"Rosebud Bookshop",cat:"Shopping",sub:"Bookshop",priority:"Medium",when:"Day",day:"Flex",liner:"Small curated bookshop — 5–10 min slow moment",hours:"Mon–Sat 10:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Rosebud+Bookshop+Porto",ig:"",emoji:"📚"},
+  {name:"Retro City Porto",cat:"Shopping",sub:"Vintage",priority:"Medium",when:"Day",day:"Flex",liner:"Curated vintage hunting — more raw, good wildcard",hours:"Mon–Sat 11:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Retro+City+Porto",ig:"",emoji:"👗"},
+  {name:"Nola Kitchen",cat:"Cafe",sub:"Healthy / all-day",priority:"Medium",when:"Breakfast / Lunch",day:"Flex",liner:"Reset meal — no additives, farm-to-table, vegan-friendly. Best light option in center",hours:"Daily 9:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Nola+Kitchen+Porto",ig:"https://www.instagram.com/nolakitchen.porto/",emoji:"🥗"},
+  {name:"Praia da Luz",cat:"Restaurant",sub:"Seafood / sunset",priority:"High",when:"Sunset / Dinner",day:"Flex",liner:"Best sunset spot with traditional bacalhau — beachfront on the Atlantic, terrace with ocean views",hours:"Daily 10:00–02:00",maps:"https://www.google.com/maps/search/?api=1&query=Restaurante+Praia+da+Luz+Porto+Foz",ig:"https://www.instagram.com/praiadaluzporto/",emoji:"🌊"},
+  {name:"Mistu",cat:"Restaurant",sub:"Global fusion",priority:"High",when:"Dinner",day:"Flex",liner:"Mind-blowing global fusion in a converted metalwork shop — stunning interior, book ahead",hours:"Mon–Thu 19:30–23:30, Fri 19:30–00:00, Sat 13:00–15:30 & 19:30–00:00, Sun 13:00–15:30 & 19:30–23:30",maps:"https://www.google.com/maps/search/?api=1&query=Mistu+Restaurante+Porto",ig:"https://www.instagram.com/misturestaurant/",emoji:"🌏"},
+  {name:"Tia Aninhas",cat:"Restaurant",sub:"Traditional Portuguese",priority:"High",when:"Lunch",day:"Flex",liner:"Most authentic Porto experience — canteen-style, no printed menu, grandma-level cooking, cheap",hours:"Mon–Sat 12:00–22:30, Sun 12:00–15:00",maps:"https://www.google.com/maps/search/?api=1&query=Restaurante+Tia+Aninhas+Porto",ig:"https://www.instagram.com/restaurantetiaaninhas/",emoji:"🍲"},
+  {name:"Early Cedofeita",cat:"Cafe",sub:"Cafe + shop + studio",priority:"High",when:"Morning / Day",day:"Sat",liner:"Chic minimalist cafe + elegant grocery + made-in-Portugal clothing with a sewing room in the back garden",hours:"Mon–Sat 9:00–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Early+Cedofeita+Porto",ig:"https://www.instagram.com/earlycedofeita/",emoji:"🌿"},
+  {name:"Restaurante Oxalá",cat:"Restaurant",sub:"Special occasion",priority:"Medium",when:"Dinner",day:"Flex",liner:"35km from Porto in Ovar — unlimited bubbles on arrival, bottles on ceiling, barrel rooms, unforgettable concept",hours:"Tue–Sun 12:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Restaurante+Oxalá+Ovar+Portugal",ig:"https://www.instagram.com/restauranteoxalaovar/",emoji:"🍾"},
+  {name:"Maria Dentada",cat:"Cafe",sub:"Botanical garden cafe",priority:"High",when:"Morning / Lunch",day:"Sat",liner:"Hidden slow-life cafe inside Porto's botanical garden — seasonal food, garden terrace, completely peaceful",hours:"Tue–Sun 10:00–18:00",maps:"https://www.google.com/maps/search/?api=1&query=Maria+Dentada+Jardim+Botânico+Porto",ig:"https://www.instagram.com/mariadentada/",emoji:"🌺"},
+  {name:"Espaço Porto Cruz",cat:"Bar",sub:"Rooftop / port wine",priority:"High",when:"Afternoon / Sunset",day:"Flex",liner:"Best rooftop view over old Porto from Gaia — 360° terrace, port wine cocktails, near your hotel",hours:"Tue–Sat 12:30–00:00, Sun 12:30–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Espaço+Porto+Cruz+Vila+Nova+de+Gaia",ig:"https://www.instagram.com/espacoportocruz/",emoji:"🏛️"},
+  {name:"Rosi Café",cat:"Coffee",sub:"Ukrainian brunch",priority:"High",when:"Morning / Brunch",day:"Sat",liner:"Hip Ukrainian brunch spot — syrnyky pancakes, great specialty coffee, hidden back garden",hours:"Mon–Fri 9:00–16:00, Sat–Sun 9:00–17:00",maps:"https://www.google.com/maps/search/?api=1&query=Rosi+Cafe+Porto",ig:"https://www.instagram.com/rosi_cafe_porto/",emoji:"🥞"},
+
+  // ── NEAR REBELLO ──────────────────────────────────────────────────────────
+  {name:"Ar de Rio",cat:"Restaurant",sub:"Portuguese / river view",priority:"High",when:"Lunch / Dinner",day:"Flex",liner:"Glasshouse restaurant right on the Gaia waterfront — francesinha, grilled fish, and the best river view of Ribeira. Steps from the hotel.",hours:"Daily 12:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Ar+de+Rio+Vila+Nova+de+Gaia",ig:"",emoji:"🪟"},
+  {name:"Enoteca 17.56",cat:"Wine Bar",sub:"Wine restaurant",priority:"High",when:"Dinner",day:"Flex",liner:"Elegant Douro-facing wine restaurant in a former port lodge — 600+ labels, cigar lounge, fromagerie, panoramic terrace. The serious wine experience near the hotel.",hours:"Tue–Sun 12:00–15:00 & 19:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Enoteca+17.56+Vila+Nova+de+Gaia",ig:"",emoji:"🍷"},
+  {name:"7g Roaster (Gaia)",cat:"Coffee",sub:"Specialty coffee + brunch",priority:"High",when:"Morning",day:"Flex",liner:"Best coffee on the Gaia side — roasts in-house, strong brunch, right near the hotel. Go early.",hours:"Daily 8:00–18:00",maps:"https://www.google.com/maps/search/?api=1&query=7g+Roaster+Gaia+Porto",ig:"https://www.instagram.com/7g.roaster/",emoji:"☕"},
+  {name:"Espaço Porto Cruz",cat:"Bar",sub:"Rooftop / port wine",priority:"High",when:"Afternoon / Sunset",day:"Flex",liner:"360° rooftop terrace on the Gaia waterfront — port cocktails, best views of Porto's skyline. 5 min walk from the hotel.",hours:"Tue–Sat 12:30–00:00, Sun 12:30–19:00",maps:"https://www.google.com/maps/search/?api=1&query=Espaço+Porto+Cruz+Vila+Nova+de+Gaia",ig:"https://www.instagram.com/espacoportocruz/",emoji:"🏛️"},
+  {name:"Guindalense FC",cat:"Bar",sub:"Local bar",priority:"High",when:"Evening / Sunset",day:"Fri",liner:"Local football club bar — cheap drinks, best bridge view in all of Porto. 10 min walk from the hotel uphill.",hours:"Daily 12:00–24:00",maps:"https://www.google.com/maps/search/?api=1&query=Guindalense+Football+Club+Porto",ig:"",emoji:"🍺"},
+  {name:"Casa Tão Longe, Tão Perto",cat:"Restaurant",sub:"Local / cozy",priority:"Medium",when:"Dinner",day:"Flex",liner:"Small cozy restaurant in Gaia — local food, intimate feel, no fuss. Perfect arrival-night dinner near the hotel.",hours:"Tue–Sun 19:00–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Casa+Tão+Longe+Tão+Perto+Gaia",ig:"",emoji:"🍽️"},
+  {name:"Jardim do Morro",cat:"Viewpoint",sub:"Sunset spot",priority:"High",when:"Sunset · 20:31",day:"Fri",liner:"The Friday sunset moment — best view of Porto, locals + music. 10 min walk from the hotel.",hours:"Always open",maps:"https://www.google.com/maps/search/?api=1&query=Jardim+do+Morro+Vila+Nova+de+Gaia",ig:"",emoji:"🌅"},
+  {name:"Serra do Pilar",cat:"Viewpoint",sub:"Panoramic",priority:"High",when:"Sunset",day:"Fri",liner:"5 min walk above Jardim do Morro — best full panorama of Porto. Monastery + incredible terrace.",hours:"Always open",maps:"https://www.google.com/maps/search/?api=1&query=Miradouro+da+Serra+do+Pilar+Gaia",ig:"",emoji:"🏔️"},
+];
+
+function catClass(cat) {
+  const map = {
+    "Coffee": "badge-coffee",
+    "Pastry": "badge-pastry",
+    "Streetfood": "badge-streetfood",
+    "Restaurant": "badge-restaurant",
+    "Wine Bar": "badge-wine-bar",
+    "Bar": "badge-bar",
+    "Church": "badge-church",
+    "Viewpoint": "badge-viewpoint",
+    "Sight": "badge-sight",
+    "Museum": "badge-museum",
+    "Experience": "badge-experience",
+    "Shopping": "badge-shopping",
+  };
+  return map[cat] || "badge-coffee";
+}
+
+function dayClass(day) {
+  if (day === "Fri") return "day-fri";
+  if (day === "Sat") return "day-sat";
+  if (day === "Fri/Sat") return "day-fri-sat";
+  return "day-flex";
+}
+
+function dayLabel(day) {
+  if (day === "Fri") return "Friday";
+  if (day === "Sat") return "Saturday";
+  if (day === "Fri/Sat") return "Fri + Sat";
+  return "Flexible";
+}
+
+function placeholderBg(cat) {
+  const map = {
+    "Coffee": "linear-gradient(135deg, #f5e6c8, #e8d0a0)",
+    "Pastry": "linear-gradient(135deg, #fde8d8, #f5c8a0)",
+    "Streetfood": "linear-gradient(135deg, #e8f5e8, #c8e8c8)",
+    "Restaurant": "linear-gradient(135deg, #f5e8f5, #e8c8e8)",
+    "Wine Bar": "linear-gradient(135deg, #ede8f5, #d0c0e8)",
+    "Bar": "linear-gradient(135deg, #e8eef5, #c0d0e8)",
+    "Church": "linear-gradient(135deg, #f5f0e0, #e8e0c0)",
+    "Viewpoint": "linear-gradient(160deg, #f5a623, #e8607a, #2a3a7e)",
+    "Sight": "linear-gradient(135deg, #e8f0f8, #c0d0e8)",
+    "Museum": "linear-gradient(135deg, #f0e8e8, #e0c0c0)",
+    "Experience": "linear-gradient(135deg, #c8e8f8, #2a5f7e)",
+    "Shopping": "linear-gradient(135deg, #f8f0e8, #e8d8c0)",
+  };
+  return map[cat] || "#f0e6d0";
+}
+
+
+
+// ── ORDERED ITINERARIES ─────────────────────────────────────────────────────
+// Each entry: { name, time, step, section }
+// name must match places[].name exactly
+
+const fridayOrder = [
+  { name: "Soma",                    time: "09:00", step: 1,  section: "Morning · Tiles & Coffee" },
+  { name: "Manteigaria",             time: "09:20", step: 2,  section: "Morning · Tiles & Coffee" },
+  { name: "Igreja de Santo Ildefonso",time:"09:45", step: 3,  section: "Morning · Tiles & Coffee" },
+  { name: "Capela das Almas",        time: "10:00", step: 4,  section: "Morning · Tiles & Coffee" },
+  { name: "São Bento Station",       time: "10:15", step: 5,  section: "Morning · Tiles & Coffee" },
+  { name: "Igreja do Carmo",         time: "10:50", step: 6,  section: "Morning · Tiles & Coffee" },
+  { name: "Igreja de Santa Clara",   time: "11:15", step: 7,  section: "Late Morning · Baroque & Views" },
+  { name: "Largo da Pena Ventosa",   time: "11:50", step: 8,  section: "Late Morning · Baroque & Views" },
+  { name: "Sé do Porto",             time: "12:00", step: 9,  section: "Late Morning · Baroque & Views" },
+  { name: "Conga",                   time: "13:00", step: 10, section: "Lunch" },
+  { name: "Escovaria de Belomonte",  time: "14:00", step: 11, section: "Afternoon · Ribeira & Wander" },
+  { name: "Ribeira Square",          time: "14:15", step: 12, section: "Afternoon · Ribeira & Wander" },
+  { name: "Prova",                   time: "15:30", step: 13, section: "Afternoon · Ribeira & Wander" },
+  { name: "Dom Luís I Bridge",       time: "16:30", step: 14, section: "Afternoon · Ribeira & Wander" },
+  { name: "Jardim do Morro",         time: "19:30", step: 15, section: "Evening · Sunset & Golden Hour" },
+  { name: "Serra do Pilar",          time: "20:31", step: 16, section: "Evening · Sunset & Golden Hour" },
+  { name: "Guindalense FC",          time: "21:00", step: 17, section: "Evening · Sunset & Golden Hour" },
+  { name: "Babel",                   time: "22:30", step: 18, section: "Night · Dinner & Drinks" },
+  { name: "Torto",                   time: "24:00", step: 19, section: "Night · Dinner & Drinks" },
+];
+
+const saturdayOrder = [
+  { name: "Época",                   time: "09:30", step: 1,  section: "Morning · Slow Start" },
+  { name: "Jardins Palácio de Cristal", time:"10:30",step:2, section: "Morning · Slow Start" },
+  { name: "Miradouro Macieirinha",   time: "11:15", step: 3,  section: "Morning · Slow Start" },
+  { name: "Earlymade",               time: "11:45", step: 4,  section: "Afternoon · Cedofeita Shopping" },
+  { name: "Matéria Prima",           time: "12:15", step: 5,  section: "Afternoon · Cedofeita Shopping" },
+  { name: "Patch Porto",             time: "12:45", step: 6,  section: "Afternoon · Cedofeita Shopping" },
+  { name: "Portuguese Flannel",      time: "13:15", step: 7,  section: "Afternoon · Cedofeita Shopping" },
+  { name: "Zum Zum Concept Shop",    time: "13:45", step: 8,  section: "Afternoon · Cedofeita Shopping" },
+  { name: "Loja da Burel",          time: "14:15", step: 9,  section: "Afternoon · Cedofeita Shopping" },
+  { name: "Genuíno",                 time: "14:45", step: 10, section: "Lunch" },
+  { name: "Rosebud Bookshop",        time: "16:00", step: 11, section: "Late Afternoon · Wind Down" },
+  { name: "The Feeting Room",        time: "16:20", step: 12, section: "Late Afternoon · Wind Down" },
+  { name: "Fiasco",                  time: "17:00", step: 13, section: "Late Afternoon · Wind Down" },
+  { name: "Serralves",               time: "10:00", step: 14, section: "Alternative · If skipping shops" },
+  { name: "Piscina das Marés",       time: "Morning",step:15, section: "Alternative · If skipping shops" },
+  { name: "Elemento",                time: "20:00", step: 16, section: "Dinner · The Anchor" },
+  { name: "Torto",                   time: "22:30", step: 17, section: "Night" },
+  { name: "Capela Incomum",          time: "22:30", step: 18, section: "Night" },
+];
+
+// Build lookup maps
+function buildOrderMap(orderedList) {
+  const map = {};
+  orderedList.forEach((item, idx) => {
+    map[item.name] = { ...item, sortIdx: idx };
+  });
+  return map;
+}
+
+const fridayMap  = buildOrderMap(fridayOrder);
+const saturdayMap = buildOrderMap(saturdayOrder);
+
+
+// Google Places photo lookup by name
+const placePhotos = {
+  "Soma Café & Cozinha": "ChIJSUcq2VhlJA0RR-ABwfMrago",
+  "Soma": "ChIJSUcq2VhlJA0RR-ABwfMrago",
+  "Manteigaria": "ChIJEZ6T3_5lJA0RK-OYoZM1awA",
+  "Conga": "ChIJESf1tuRkJA0R3xI4-upyYNU",
+  "Gazela": "ChIJgSq_0-VkJA0RxjiPioKLL3A",
+  "Prova": "ChIJeZxSwuFkJA0RF9lEejCuSM8",
+  "Torto": "ChIJmYtMatVlJA0RJVJbTfbdtf8",
+  "Guindalense FC": "ChIJucMzGudkJA0RFRlChZUGnb0",
+  "Jardim do Morro": "ChIJ08witLVlJA0RpyHHdhb_sG0",
+  "Igreja de Santa Clara": "ChIJOxakwuZkJA0RbD6roWjd5v0",
+  "São Bento Station": "ChIJR_lvdeRkJA0RPneoSR6STxI",
+  "Earlymade": "ChIJr4kJewNlJA0RflOp7NX5Mqw",
+  "Fiasco": "ChIJCaNqSgBlJA0R__SnuFQQ4oA",
+  "Babel": "ChIJv-EMYLhlJA0R3hudTWlWtMU",
+  "Bicho": "ChIJZ7TI2oVlJA0RyFLhEV3UwQc",
+  "Elemento": "ChIJqRg1Wc5lJA0Rk17SG_ZWxGo",
+  "Patch Porto": "ChIJA4NEZgNlJA0Rw8ZMBImMjl4",
+  "Matéria Prima": "ChIJKcGf0PxkJA0RETzcnKF5aD0",
+  "Época": "ChIJWTZntxxlJA0RRG0ITX_Cahs",
+  "Hakko": "ChIJp35UtP9lJA0Rw1P_u2whTjI",
+  "Combi Coffee Roasters": "ChIJvd30NFtkJA0RJgIg3FK76zc",
+  "Praia da Luz": "ChIJda785p1vJA0R7S6WQs8_HQc",
+  "Mistu": "ChIJb1rLIB5lJA0RtTLPWuLoCDk",
+  "Tia Aninhas": "ChIJU30UIARlJA0RnFh94ngsHVk",
+  "Rosi Café": "ChIJGd_b2-dlJA0RNFs8dCKLOUo",
+  "Ar de Rio": "ChIJ-6SzON5kJA0RWW4Nc2IypYw",
+  "Enoteca 17.56": "ChIJ2Yc1WMJlJA0R_8Opg1W8gRo",
+  "7g Roaster (Gaia)": "ChIJXVSKr99kJA0R0SDEIvQdji0",
+  "7g Roaster": "ChIJXVSKr99kJA0R0SDEIvQdji0",
+  "Espaço Porto Cruz": "ChIJG0x3Sd5kJA0Rw3KjhuOoSMg",
+  "Maria Dentada": "ChIJwefQYohlJA0RrHMw9spULWE",
+};
+
+function getPhotoUrl(name, placeId) {
+  const pid = placeId || placePhotos[name];
+  if (!pid) return null;
+  return `https://places.googleapis.com/v1/places/${pid}/photos/0/media?maxHeightPx=320&key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY`;
+}
+
+// ── RENDER WITH SECTIONS ─────────────────────────────────────────────────────
+
+function renderCards(filtered, orderMap) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  document.getElementById('resultsBar').textContent =
+    `${filtered.length} place${filtered.length !== 1 ? 's' : ''}`;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state">No places match this filter.</div>';
+    return;
+  }
+
+  const isOrdered = !!orderMap;
+  let lastSection = null;
+
+  filtered.forEach((p, i) => {
+    const meta = orderMap ? orderMap[p.name] : null;
+
+    // Section divider
+    if (isOrdered && meta && meta.section !== lastSection) {
+      lastSection = meta.section;
+      const divider = document.createElement('div');
+      divider.className = 'section-label';
+      divider.textContent = meta.section;
+      grid.appendChild(divider);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = `${Math.min(i * 25, 280)}ms`;
+
+    const bgStyle = `background: ${placeholderBg(p.cat)};`;
+    const stepBadge = meta
+      ? `<div class="step-badge">${meta.time}</div>`
+      : '';
+    const photoUrl = getPhotoUrl(p.name, p.pid);
+
+    const fallbackHtml = `<div class="card-img-placeholder" style="${bgStyle}"><span style="font-size:42px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15))">${p.emoji}</span><div class="priority-dot ${p.priority.toLowerCase()}"></div>${stepBadge}</div>`;
+    const imgHtml = photoUrl
+      ? `<div class="card-photo-wrap"><img class="card-photo" src="${photoUrl}" alt="${p.name}" onerror="this.closest('.card-photo-wrap').outerHTML='${fallbackHtml.replace(/'/g, "\\'")}'" loading="lazy"><div class="priority-dot ${p.priority.toLowerCase()}"></div>${stepBadge}</div>`
+      : fallbackHtml;
+
+    card.innerHTML = imgHtml + `
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-name">${p.name}</div>
+          <span class="card-cat-badge ${catClass(p.cat)}">${p.cat}</span>
+        </div>
+        <div class="card-sub">${p.sub}</div>
+        <div class="card-liner">${p.liner}</div>
+        <div class="card-meta">
+          <span class="meta-item"><span class="meta-icon">🕐</span>${p.when}</span>
+          <span class="day-tag ${dayClass(p.day)}">${dayLabel(p.day)}</span>
+          ${p.priority === 'High' ? '<span class="meta-item" style="color:#b85c38;">⭐ Must</span>' : ''}
+        </div>
+      </div>
+      <div class="card-hours">⏱ ${p.hours}</div>
+      <div class="card-footer">
+        <a class="link-btn btn-map" href="${p.maps}" target="_blank">📍 Navigate</a>
+        ${p.ig ? `<a class="link-btn btn-ig" href="${p.ig}" target="_blank">📸 Instagram</a>` : ''}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── FILTER LOGIC ─────────────────────────────────────────────────────────────
+
+const nearHotel = new Set([
+  "Ar de Rio","Enoteca 17.56","7g Roaster (Gaia)","Espaço Porto Cruz",
+  "Guindalense FC","Casa Tão Longe, Tão Perto","Jardim do Morro",
+  "Serra do Pilar","7g Roaster","Casa Tão Longe",
+]);
+
+const filterMap = {
+  'all':           { fn: () => true,                                            order: null },
+  'day-fri':       { fn: p => p.day === 'Fri' || p.day === 'Fri/Sat',          order: fridayMap },
+  'day-sat':       { fn: p => p.day === 'Sat' || p.day === 'Fri/Sat',          order: saturdayMap },
+  'cat-coffee':    { fn: p => ['Coffee','Pastry'].includes(p.cat),              order: null },
+  'cat-food':      { fn: p => ['Restaurant','Streetfood'].includes(p.cat),      order: null },
+  'cat-wine':      { fn: p => p.cat === 'Wine Bar',                             order: null },
+  'cat-bar':       { fn: p => p.cat === 'Bar',                                  order: null },
+  'cat-sight':     { fn: p => ['Sight','Church','Viewpoint','Museum','Experience'].includes(p.cat), order: null },
+  'cat-shop':      { fn: p => p.cat === 'Shopping',                             order: null },
+  'priority-high': { fn: p => p.priority === 'High',                            order: null },
+  'near-hotel':    { fn: p => nearHotel.has(p.name),                            order: null },
+};
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const key = btn.dataset.filter;
+    const { fn, order } = filterMap[key];
+
+    let filtered = places.filter(fn);
+
+    if (order) {
+      // Sort by itinerary order; unmatched fall to end
+      filtered = filtered.slice().sort((a, b) => {
+        const ai = order[a.name]?.sortIdx ?? 999;
+        const bi = order[b.name]?.sortIdx ?? 999;
+        return ai - bi;
+      });
+    }
+
+    renderCards(filtered, order);
+  });
+});
+
+// Scroll top
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 400);
+});
+
+// Initial render
+renderCards(places, null);
+</script>
+</body>
+</html>
