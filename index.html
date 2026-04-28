@@ -353,6 +353,13 @@
   }
   .btn-ig:hover { border-color: var(--ink); color: var(--ink); }
 
+  .btn-menu {
+    background: transparent;
+    color: var(--ink-mid);
+    border: 1px solid var(--line);
+  }
+  .btn-menu:hover { border-color: var(--ink); color: var(--ink); }
+
   /* ── SECTION LABELS ── */
   .section-label {
     grid-column: 1 / -1;
@@ -519,7 +526,7 @@ const places = [
   {name:"Casa das Ostras",cat:"Streetfood",sub:"Oyster bar · market",priority:"High",when:"Lunch",day:"Sat",liner:"Oyster bar stall inside Mercado do Bolhão — fresh oysters, sea urchin, barnacles, shrimp, sardine tartar. Standing at the counter, one glass of white. Perfect light lunch.",hours:"Mon–Fri 8:00–20:00 · Sat 8:00–18:00",maps:"https://www.google.com/maps/search/?api=1&query=Casa+das+Ostras+Mercado+Bolhao+Porto+Rua+Formosa+322",ig:"https://www.instagram.com/casa.das.ostras/",emoji:"🦪",lat:41.1492,lng:-8.6058},
   {name:"Genuíno",cat:"Restaurant",sub:"Portuguese",priority:"High",when:"Lunch",day:"Sat",liner:"Balanced modern + local — solid Cedofeita lunch",hours:"Tue–Sat 12:00–15:00, 19:00–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Genuíno+Porto",ig:"https://www.instagram.com/genuino.porto/",emoji:"🍽️",lat:41.151,lng:-8.617},
   {name:"Airport Transfer · JMC",cat:"Transfer",sub:"Hotel pickup",priority:"High",when:"18:20 arrival",day:"Thu",liner:"Driver at arrivals gate with your name sign. Can't find them → Starbucks right side of gate. Connect to airport WiFi on landing so driver can reach you. Issues: Rebello +351 22 002 8940 · WhatsApp +351 912 947 419 · JMC +351 910 015 653. No contact after 1h15 = no-show.",hours:"Flight lands 18:20",maps:"https://www.google.com/maps/search/?api=1&query=Porto+Airport+Arrivals",ig:"",emoji:"🚗",lat:41.2355,lng:-8.6781},
-  {name:"Bello Rooftop",cat:"Bar",sub:"Rooftop bar",priority:"High",when:"Dinner",day:"Thu",liner:"Confirmed Thursday reservation 20:30 — rooftop bar, arrive on time.",hours:"",maps:"https://www.google.com/maps/search/?api=1&query=Bello+Rooftop+Porto",ig:"",emoji:"🌆",lat:41.1446,lng:-8.6149},
+  {name:"Bello Rooftop",cat:"Bar",sub:"Rooftop bar",priority:"High",when:"Dinner",day:"Thu",liner:"Confirmed Thursday reservation 20:30 — rooftop bar, arrive on time.",hours:"",maps:"https://www.google.com/maps/search/?api=1&query=Bello+Rooftop+Porto",ig:"",menu:"https://www.therebello.com/wp-content/uploads/2026/01/BELLO-ROOFTOP-MENU_EN-_DIGITAL_Jan2026.pdf",emoji:"🌆",lat:41.1446,lng:-8.6149},
   {name:"Provável",cat:"Restaurant",sub:"Seasonal / natural wine",priority:"High",when:"Dinner",day:"Fri",liner:"Confirmed Friday reservation 21:00 — seasonal local menu, natural wines, small and chef-driven. The Friday dinner anchor.",hours:"Tue–Sat 19:00–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Provável+Porto",ig:"https://www.instagram.com/provavel.porto/",emoji:"🍽️",lat:41.147,lng:-8.611},
   {name:"Cais me Bem",cat:"Restaurant",sub:"Seafood",priority:"Medium",when:"Dinner",day:"Fri",liner:"Simple seafood by the river — convenience + view",hours:"Daily 12:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Cais+me+Bem+Porto",ig:"",emoji:"🦞",lat:41.141,lng:-8.616},
   {name:"Casa Tão Longe",cat:"Restaurant",sub:"Local",priority:"Medium",when:"Dinner",day:"Flex",liner:"Cozy spot near Rebello — arrival night or lazy evening",hours:"Tue–Sun 19:00–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Casa+Tão+Longe+Tão+Perto+Gaia",ig:"",emoji:"🍽️",lat:41.137,lng:-8.61},
@@ -768,6 +775,7 @@ function renderCards(filtered, orderMap, showDist) {
       <div class="card-footer">
         <a class="link-btn btn-map" href="${p.maps}" target="_blank">📍 Navigate</a>
         ${p.ig ? `<a class="link-btn btn-ig" href="${p.ig}" target="_blank">📸 Instagram</a>` : ''}
+        ${p.menu ? `<a class="link-btn btn-menu" href="${p.menu}" target="_blank">📋 Menu</a>` : ''}
         <button class="link-btn btn-visited" data-name="${p.name}">${visited.has(p.name) ? '✓ Done' : '✓ Done'}</button>
       </div>
     `;
