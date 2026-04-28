@@ -16,6 +16,8 @@
     --accent: #2d4a3e;
     --accent-warm: #c4602a;
     --line: rgba(28,28,26,0.10);
+    --thu: #e0ddf0;
+    --thu-ink: #3a2d6a;
     --fri: #dce8e2;
     --fri-ink: #2d4a3e;
     --sat: #e8e0d8;
@@ -298,6 +300,7 @@
     border-radius: 1px;
   }
 
+  .day-thu     { background: var(--thu); color: var(--thu-ink); }
   .day-fri     { background: var(--fri); color: var(--fri-ink); }
   .day-sat     { background: var(--sat); color: var(--sat-ink); }
   .day-flex    { background: var(--flex); color: var(--flex-ink); }
@@ -472,6 +475,7 @@
   <div class="filters">
     <div class="filter-group" id="ctx-group">
       <button class="filter-btn active" data-ctx="all">All</button>
+      <button class="filter-btn" data-ctx="thu">Thursday</button>
       <button class="filter-btn" data-ctx="fri">Friday</button>
       <button class="filter-btn" data-ctx="sat">Saturday</button>
       <button class="filter-btn" data-ctx="must">⭐ Must-do</button>
@@ -514,6 +518,7 @@ const places = [
   {name:"Babel",cat:"Restaurant",sub:"Sharing plates",priority:"High",when:"Dinner",day:"Fri",liner:"Sharing plates + wine — intimate, perfect Friday dinner",hours:"Tue–Sun 19:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Babel+Porto",ig:"https://www.instagram.com/babelporto/",emoji:"🍽️",lat:41.1455,lng:-8.6132},
   {name:"Casa das Ostras",cat:"Streetfood",sub:"Oyster bar · market",priority:"High",when:"Lunch",day:"Sat",liner:"Oyster bar stall inside Mercado do Bolhão — fresh oysters, sea urchin, barnacles, shrimp, sardine tartar. Standing at the counter, one glass of white. Perfect light lunch.",hours:"Mon–Fri 8:00–20:00 · Sat 8:00–18:00",maps:"https://www.google.com/maps/search/?api=1&query=Casa+das+Ostras+Mercado+Bolhao+Porto+Rua+Formosa+322",ig:"https://www.instagram.com/casa.das.ostras/",emoji:"🦪",lat:41.1492,lng:-8.6058},
   {name:"Genuíno",cat:"Restaurant",sub:"Portuguese",priority:"High",when:"Lunch",day:"Sat",liner:"Balanced modern + local — solid Cedofeita lunch",hours:"Tue–Sat 12:00–15:00, 19:00–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Genuíno+Porto",ig:"https://www.instagram.com/genuino.porto/",emoji:"🍽️",lat:41.151,lng:-8.617},
+  {name:"Bello Rooftop",cat:"Bar",sub:"Rooftop bar",priority:"High",when:"Dinner",day:"Thu",liner:"Confirmed Thursday reservation 20:30 — rooftop bar, arrive on time.",hours:"",maps:"https://www.google.com/maps/search/?api=1&query=Bello+Rooftop+Porto",ig:"",emoji:"🌆",lat:41.1446,lng:-8.6149},
   {name:"Provável",cat:"Restaurant",sub:"Seasonal / natural wine",priority:"High",when:"Dinner",day:"Fri",liner:"Confirmed Friday reservation 21:00 — seasonal local menu, natural wines, small and chef-driven. The Friday dinner anchor.",hours:"Tue–Sat 19:00–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Provável+Porto",ig:"https://www.instagram.com/provavel.porto/",emoji:"🍽️",lat:41.147,lng:-8.611},
   {name:"Cais me Bem",cat:"Restaurant",sub:"Seafood",priority:"Medium",when:"Dinner",day:"Fri",liner:"Simple seafood by the river — convenience + view",hours:"Daily 12:00–23:00",maps:"https://www.google.com/maps/search/?api=1&query=Cais+me+Bem+Porto",ig:"",emoji:"🦞",lat:41.141,lng:-8.616},
   {name:"Casa Tão Longe",cat:"Restaurant",sub:"Local",priority:"Medium",when:"Dinner",day:"Flex",liner:"Cozy spot near Rebello — arrival night or lazy evening",hours:"Tue–Sun 19:00–22:30",maps:"https://www.google.com/maps/search/?api=1&query=Casa+Tão+Longe+Tão+Perto+Gaia",ig:"",emoji:"🍽️",lat:41.137,lng:-8.61},
@@ -609,6 +614,7 @@ function catClass(cat) {
 }
 
 function dayClass(day) {
+  if (day === "Thu") return "day-thu";
   if (day === "Fri") return "day-fri";
   if (day === "Sat") return "day-sat";
   if (day === "Fri/Sat") return "day-fri-sat";
@@ -616,6 +622,7 @@ function dayClass(day) {
 }
 
 function dayLabel(day) {
+  if (day === "Thu") return "Thursday";
   if (day === "Fri") return "Friday";
   if (day === "Sat") return "Saturday";
   if (day === "Fri/Sat") return "Fri + Sat";
@@ -813,6 +820,7 @@ const nearHotel = new Set([
 
 const ctxFn = {
   'all':     { fn: () => true,                                           order: null    },
+  'thu':     { fn: p => p.day === 'Thu',                                 order: null    },
   'fri':     { fn: p => p.day === 'Fri' || p.day === 'Fri/Sat',         order: fridayMap },
   'sat':     { fn: p => p.day === 'Sat' || p.day === 'Fri/Sat',         order: saturdayMap },
   'must':    { fn: p => p.priority === 'High',                           order: null    },
